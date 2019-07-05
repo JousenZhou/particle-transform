@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JousenZhou_ThreeJs_EquationShow</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="lib/three.js"></script>
+    <script src="lib/OrbitControls.js"></script>
+    <script src="lib/stats.js"></script>
+    <script src="lib/jquery-3.3.1.min.js"></script>
+    <script src="lib/tween.min.js"></script>
+    <link rel="stylesheet" href="sass/index.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <script src="js/Gpu_Particle_Transform.js"></script>
+    <script src="js/Curvilinear.js"></script>
+</head>
+<body>
+<div id="Stats-output" style="color: #000000"></div>
+<div id="WebGL-output"></div>
+<div class="nav">
+    <ul class="cd-accordion-menu animated">
+        <li class="has-children">
+            <input type="checkbox" name="group-1" id="group-1" checked>
+            <label for="group-1">费马螺线</label>
+            <ul>
+                <li class="has-children">
+                    <input type="checkbox" name="sub-group-1" id="sub-group-1">
+                    <label for="sub-group-1" class="aw">表达式 : r^2=θa^2 或 r=θ^`1/2</label>
+                    <label for="sub-group-1" class="aw">ρ = a * ( θ * π/180 )²</label>
+                    <label for="sub-group-1" class="aw"> x = ρ* cos ( θ * π/180 )</label>
+                    <label for="sub-group-1" class="aw"> y = 0</label>
+                    <label for="sub-group-1" class="aw"> z = ρ * sin (θ * π/180 )</label>
+                    <label for="sub-group-1" class="aw"> 参数( a:臂距 n:螺线圈数)</label>
+                    <label for="sub-group-1" class="aw"> a=10,&nbsp;&nbsp;n=10 <span
+                            class="sp">(Create)=></span></label>
+                </li>
+            </ul>
+        </li>
+        <li class="has-children">
+            <input type="checkbox" name="group-2" id="group-2">
+            <label for="group-2">利萨如曲线</label>
+            <ul>
+                <li class="has-children">
+                    <label for="sub-group-1" class="aw">x = a * sin( p * θ * π/180 )</label>
+                    <label for="sub-group-1" class="aw">y = 0</label>
+                    <label for="sub-group-1" class="aw">z = a * sin( q * θ * π/180 )</label>
+                    <label for="sub-group-1" class="aw">参数 ( a:Size p、q意义不明)</label>
+                    <label for="sub-group-1" class="aw"> a=10,&nbsp;&nbsp;p=5,&nbsp;&nbsp;q=6 <span class="sp">(Create)=></span></label>
+                </li>
+            </ul>
+        </li>
+        <li class="has-children">
+            <input type="checkbox" name="group-3" id="group-3">
+            <label for="group-3">心形线</label>
+            <ul>
+                <li class="has-children">
+                    <label for="sub-group-1" class="aw"> ρ= a * ( 1 - cos(θ * π / 180))</label>
+                    <label for="sub-group-1" class="aw"> x = ρ * cos(θ * π / 180)</label>
+                    <label for="sub-group-1" class="aw"> y = 0</label>
+                    <label for="sub-group-1" class="aw"> z = ρ * sin (θ * π / 180)</label>
+                    <label for="sub-group-1" class="aw">参数 ( a:Size )</label>
+                    <label for="sub-group-1" class="aw"> a=10 <span class="sp">(Create)=></span></label>
+                </li>
+            </ul>
+        </li>
+        <li class="has-children">
+            <input type="checkbox" name="group-4" id="group-4">
+            <label for="group-4">玫瑰线</label>
+            <ul>
+                <li class="has-children">
+                    <label for="sub-group-1" class="aw"> ρ = a * sin ( n * θ * π/180 )</label>
+                    <label for="sub-group-1" class="aw"> x = ρ * cos ( θ* π/180 )</label>
+                    <label for="sub-group-1" class="aw"> y = 0</label>
+                    <label for="sub-group-1" class="aw"> z = ρ * sin( θ * π/180 )</label>
+                    <label for="sub-group-1" class="aw">参数 ( a=size n单数单叶，双数双叶 叶子数=2n)</label>
+                    <label for="sub-group-1" class="aw"> a=10 n=4<span class="sp">(Create)=></span></label>
+                </li>
+            </ul>
+        </li>
+        <li class="has-children">
+            <input type="checkbox" name="group-4" id="group-5">
+            <label for="group-5">伯努利卵形线</label>
+            <ul>
+                <li class="has-children">
+                    <label for="sub-group-1" class="aw">ρ = a * ( sin ( θ * π/90 ) )²</label>
+                    <label for="sub-group-1" class="aw"> x = ρ * cos ( θ * π/180 );</label>
+                    <label for="sub-group-1" class="aw"> y = 0</label>
+                    <label for="sub-group-1" class="aw"> z = ρ * sin ( θ * π/180 );</label>
+                    <label for="sub-group-1" class="aw">参数(a=size)</label>
+                    <label for="sub-group-1" class="aw"> a=10 <span class="sp">(Create)=></span></label>
+                </li>
+            </ul>
+        </li>
+        <li class="has-children">
+            <input type="checkbox" name="group-4" id="group-6">
+            <label for="group-6">克莱线</label>
+            <ul>
+                <li class="has-children">
+                    <label for="sub-group-1" class="aw">ρ = a * ( cos (θ * π/ 720))³</label>
+                    <label for="sub-group-1" class="aw"> x = ρ * cos ( θ * π/180 );</label>
+                    <label for="sub-group-1" class="aw"> y = 0</label>
+                    <label for="sub-group-1" class="aw"> z = ρ * sin ( θ * π/180 );</label>
+                    <label for="sub-group-1" class="aw">参数(a=size n不明)</label>
+                    <label for="sub-group-1" class="aw"> a=10 &nbsp;&nbsp;n=10 <span
+                            class="sp">(Create)=></span></label>
+                </li>
+            </ul>
+        </li>
+        <li class="has-children">
+            <input type="checkbox" name="group-4" id="group-7">
+            <label for="group-7">阿基米德螺旋线</label>
+            <ul>
+                <li class="has-children">
+                    <label for="sub-group-1" class="aw">ρ = a * θ /360</label>
+                    <label for="sub-group-1" class="aw"> x = ρ * cos ( θ * π/180 )</label>
+                    <label for="sub-group-1" class="aw"> y = 0</label>
+                    <label for="sub-group-1" class="aw"> z = ρ * sin ( θ * π/180 )</label>
+                    <label for="sub-group-1" class="aw">参数 ( a:臂距 n:螺线圈数 )</label>
+                    <label for="sub-group-1" class="aw"> a=2 &nbsp;&nbsp;n=10 <span class="sp">(Create)=></span></label>
+                </li>
+            </ul>
+        </li>
+        <li class="has-children">
+            <input type="checkbox" name="group-4" id="group-8">
+            <label for="group-8">等角曲线</label>
+            <ul>
+                <li class="has-children">
+                    <label for="sub-group-1" class="aw">ρ = a * b^(θ * π /180 )</label>
+                    <label for="sub-group-1" class="aw"> x = ρ * cos ( θ * π/180 );</label>
+                    <label for="sub-group-1" class="aw"> y = 0</label>
+                    <label for="sub-group-1" class="aw"> z = ρ * sin ( θ * π/180 );</label>
+                    <label for="sub-group-1" class="aw">参数( a:不明 b:不明 )</label>
+                    <label for="sub-group-1" class="aw"> a=1 &nbsp;&nbsp;b=1.25 <span
+                            class="sp">(Create)=></span></label>
+                </li>
+            </ul>
+        </li>
+        <li class="has-children">
+            <input type="checkbox" name="group-4" id="group-9">
+            <label for="group-9">银河星系曲线</label>
+            <ul>
+                <li class="has-children">
+                    <label for="sub-group-1" class="aw">不明 <span class="sp">(Create)=></span></label>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+</body>
+<!--OpenGL-->
+<script id="vertexshader" type="x-shader/x-vertex">
+            attribute float size;
+			attribute vec3 position2;
+			                                //attribute vec3 color;；；；；；
+			 uniform float val;
+			 uniform float pixelRatio;
+			                                //varying vec3 vColor;//向片段着色器传递
+			                                  varying vec3 vPos;
+			   varying float gas;
+			   varying float t;
+               varying float z;
+               float a,b=0.;
+			void main()
+			{
+			  t=0.;
+			  z=0.;
+			  a=length(position);
+			  if(t>0.)b=max(0.,(cos(a/20.-t*.02)-.99)*3./a);
+              if(z>0.)b=max(0.,cos(a/40.-z*.01+2.));
+              gas=max(.0,sin(-a/5.));
+				//vec3 vPos;
+			   // vColor = color;//
+				vPos.x = position.x * val + position2.x * (1.-val);
+				vPos.y = position.y* val + position2.y * (1.-val);
+				vPos.z = position.z* val + position2.z * (1.-val);
+				vec4 mvPosition = modelViewMatrix * vec4( vPos, 1.0 );
+				gl_PointSize = pixelRatio*(size)*(0.3+gas*2.)/length(mvPosition.xyz)+5.;;
+				gl_Position = projectionMatrix * mvPosition;
+
+			}
+
+
+</script>
+<script id="fragmentshader" type="x-shader/x-fragment">
+            uniform vec3 color;
+            uniform float ccs;
+			//uniform sampler2D texture;
+			varying vec3 vPos;//
+			varying float gas;
+			 varying float z;
+			void main()
+			 {
+				//vec3 vColor = vec3(1.0, 1., 1.);
+                float a=distance(vPos,vPos);
+                if(a>0.)a=1.;
+                float b=max(.32,.0065*length(vPos));
+                float c=distance(gl_PointCoord,vec2(.5));
+                float starlook=-(c-.5)*1.2*gas;
+                float gaslook=(1.-gas)/(c*10.);
+                float texture=starlook+gaslook;
+
+				//vec3 vColor = vec3(1.0, 0., 0.);
+                //vColor.r = 0.5*ccs;
+                //vColor.g = 0.5;
+                //vColor.b = 0.5;
+             //   vColor.r = vPos.z/0.5;
+             //   vColor.g = vPos.y/0.5;
+             //   vColor.b = vPos.x/0.5;
+                gl_FragColor=vec4(.35,.28,b,1.)*texture*(1.-a*.35);
+                if(z>0.)gl_FragColor*=cos(1.57*z/322.)*(1.-.001*length(vPos));
+				//gl_FragColor = vec4( color * vColor, 1.5 );
+				//顶点贴图
+    			//gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
+			}
+
+
+</script>
+
+<script>
+    let app={
+        init:function () {
+            this.Accordion();
+            this.CreateBaseScene();
+            this.AddCurve();
+            this.BindingEvent();
+        },
+        Accordion:function () //列表手风琴特效
+        {
+            let accordionsMenu = $('.cd-accordion-menu');
+            if (accordionsMenu.length > 0) {
+                accordionsMenu.each(function () {
+                    let accordion = $(this);
+                    accordion.on('change', 'input[type="checkbox"]', function () {
+                        let checkbox = $(this);
+                        (checkbox.prop('checked')) ? checkbox.siblings('ul').attr('style', 'display:none;').slideDown(300) : checkbox.siblings('ul').attr('style', 'display:block;').slideUp(300);
+                    });
+                });
+            }
+        },
+        CreateBaseScene: function () //创建基本场景
+        {
+            let app = this;
+            let scene = new THREE.Scene();
+            app.scene = scene;
+            let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+            camera.position.set(-10, 68, -135);
+            camera.rotation.set(-2.9527, -0.1406, -3.1148);
+            app.camera = camera;
+            let orbit = new THREE.OrbitControls(camera);
+            let renderer = new THREE.WebGLRenderer({
+                alpha: true,
+                antialias: true,
+                shadowMapEnabled: true
+            });//透明度，抗锯齿，阴影
+            renderer.setClearColor(new THREE.Color('#000000'));
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById("WebGL-output").appendChild(renderer.domElement);
+            let stats = app.initStats()
+            window.onresize = function () {
+                app.OnResize(camera, renderer)
+            }
+            /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+            /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+            function Render() {
+                orbit.update();
+                TWEEN.update();
+                stats.update();
+                requestAnimationFrame(Render);
+                renderer.render(scene, camera);
+            }
+            Render();
+        },
+        initStats: function () //性能FPS检测
+        {
+            let stats = new Stats();
+            stats.setMode(0);
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+            document.getElementById("Stats-output").appendChild(stats.domElement);
+            return stats;
+        },
+        OnResize: function (camera, renderer)//视图重置
+        {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        },
+        AddCurve:function () {//添加曲线集合
+            let app=this
+            var array=[];
+
+            var Fermat = new  THREE.Geometry();
+            Fermat.vertices =drawFermatsSpiral(0,0,0,1,10);
+            array.push(Fermat)
+
+            var LisaRu = new  THREE.Geometry();
+            LisaRu.vertices =drawLissajous(0,0,0,10,5,6);
+            array.push(LisaRu)
+
+            var Heart = new  THREE.Geometry();
+            Heart.vertices =drawCardioid(0,0,0,10);
+            array.push(Heart)
+
+            var Rose = new  THREE.Geometry();
+            Rose.vertices =drawRose1(0,0,0,10,4);
+            array.push(Rose)
+
+            var Bernoulli = new  THREE.Geometry();
+            Bernoulli.vertices =drawLemniscate(0,0,0,10);
+            array.push(Bernoulli)
+
+            var Clay = new  THREE.Geometry();
+            Clay.vertices =drawCayleysSextic(0,0,0,10,10);
+            array.push(Clay)
+
+            var Archimedes = new  THREE.Geometry();
+            Archimedes.vertices =drawArchimedeanSpiral(0,0,0,2,10);
+            array.push(Archimedes)
+
+            var IsometricAngle = new  THREE.Geometry();
+            IsometricAngle.vertices =IsAngle(0,0,0,4,1,1.5);
+            array.push(IsometricAngle)
+
+            var Galaxy = new  THREE.Geometry();
+            Galaxy.vertices =newGalaxy();
+            array.push(Galaxy)
+
+            let Arrayset=new GPUtransform(array,app.scene);
+            Arrayset.update();
+            app.Arrayset=Arrayset;
+            app.Arrayset.chance( app.Arrayset.particleSystem,0,4.0,app.Arrayset)
+
+        },
+        LineSwitch:function (num,size) //变换
+        {
+            let app=this;
+            app.Arrayset.chance( app.Arrayset.particleSystem,num,size,app.Arrayset)
+        },
+        BindingEvent:function () //绑定事件
+        {
+            let app=this;
+            Array.from($('.sp')).forEach(function (item,index) {
+               $(item).click(function () {
+                   app.LineSwitch(index,4.0)
+               })
+            })
+
+        }
+
+    }
+    window.addEventListener("DOMContentLoaded", function () {
+        app.init();
+    })
+</script>
+</html>
